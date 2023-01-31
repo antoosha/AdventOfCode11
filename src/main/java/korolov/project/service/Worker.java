@@ -14,7 +14,7 @@ public class Worker {
 
     private final String path = "input.txt";
 
-    private final long rounds = 20;
+    private final long rounds = 10000;
 
     private final StringToMonkeyParser monkeyParser = new StringToMonkeyParser();
 
@@ -64,14 +64,19 @@ public class Worker {
 
     private void processMonkeys() {
 
+        long reliefDivisor = 1;
+        for (Monkey monkey : monkeys) {
+            reliefDivisor = reliefDivisor * monkey.getDivisibleBy();
+        }
+
         for (long i = 0; i < rounds; i++) {
             for (Monkey monkey : monkeys) {
-                processOneMonkey(monkey);
+                processOneMonkey(monkey, reliefDivisor);
             }
         }
     }
 
-    private void processOneMonkey(Monkey monkey) {
+    private void processOneMonkey(Monkey monkey, long reliefDivisor) {
 
         // no items to process
         while (monkey.hasItems()) {
@@ -79,7 +84,9 @@ public class Worker {
             long newWorryLevel = applyOperation(monkey);
 
             // relief that the monkey's inspection didn't damage the item
-            newWorryLevel = (long) (newWorryLevel / 3d);
+             newWorryLevel = newWorryLevel % reliefDivisor;
+
+
 
             // do test
             if ((newWorryLevel % monkey.getDivisibleBy()) == 0) {
